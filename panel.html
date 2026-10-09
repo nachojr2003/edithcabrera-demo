@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="es-PE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0A0A0A">
+<title>Mis leads | Edith Cabrera</title>
+<link rel="icon" type="image/png" href="assets/logo-perfil.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ==========================================================================
+   Panel "Mis leads": la bandeja ordenada de Edith (Caliente / Tibio / Frío).
+   Autocontenido: HTML + CSS + JS vanilla. Sin frameworks.
+
+   Por ahora muestra DATOS DE EJEMPLO. Para conectarlo a las conversaciones
+   reales, poner la URL de un webhook GET en PANEL_ENDPOINT (abajo, en el script):
+   debe devolver las filas de la tabla citas_demo_edithcabrera.
+   ========================================================================== */
+:root{
+  --ink:#0A0A0A; --ink-2:#121110; --ink-3:#1A1815;
+  --gold:#D7A342; --gold-hi:#F2CD73;
+  --paper:#F4EFE4; --mute:#B1AA9B; --mute-2:#8A8476;
+  --line:rgba(215,163,66,.30); --line-soft:rgba(244,239,228,.12);
+  --caliente:#E5532D; --tibio:#E0A526; --frio:#7C98B3; --sin:#8A8476;
+  --serif:'Cormorant Garamond',Georgia,serif; --caps:'Cinzel',Georgia,serif;
+  --sans:'Manrope',system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;color-scheme:dark}
+body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100dvh;display:flex;flex-direction:column}
+img{max-width:100%;height:auto;display:block}
+p,h1,h2,h3,dl,dd,ul{margin:0}
+ul{padding:0;list-style:none}
+button{font-family:inherit;font-size:inherit;color:inherit}
+[hidden]{display:none !important}
+a{color:var(--gold-hi)}
+:focus-visible{outline:3px solid var(--gold-hi);outline-offset:2px;border-radius:8px}
+
+.aviso{background:#050505;color:var(--mute);padding:7px 16px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-align:center;border-bottom:1px solid var(--line-soft)}
+.aviso b{color:var(--gold);font-weight:800}
+.aviso .corto{display:none}
+
+.top{background:var(--ink);border-bottom:1px solid var(--line-soft)}
+.top-in{max-width:1240px;margin:0 auto;padding:8px 18px;display:flex;align-items:center;gap:12px}
+.top-in .logo{width:44px;height:44px;border-radius:50%;flex:none}
+.top-in .quien b{display:block;font-family:var(--caps);font-weight:600;font-size:14px;letter-spacing:.16em;color:var(--gold);line-height:1.2}
+.top-in .quien small{display:block;font-size:12.5px;color:var(--mute);font-weight:500}
+.top-sp{flex:1}
+.lnk{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid var(--line);color:var(--paper);font-weight:700;font-size:14px;text-decoration:none;white-space:nowrap}
+.lnk:hover{border-color:var(--gold);color:var(--gold-hi)}
+.lnk.volver{border-color:transparent;color:var(--mute);padding:0 10px}
+.lnk.volver:hover{color:var(--gold-hi)}
+
+main{flex:1;width:100%;max-width:1240px;margin:0 auto;padding:22px 18px 40px}
+
+.ejemplo{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;border:1.5px dashed var(--gold);background:rgba(215,163,66,.07);border-radius:14px;padding:11px 16px;font-size:14px;color:var(--paper)}
+.ejemplo b{font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-hi);font-size:12.5px}
+.ejemplo.real{border-style:solid;background:rgba(124,152,179,.08);border-color:rgba(124,152,179,.5)}
+.ejemplo.real b{color:#B7CBDD}
+.ejemplo .sp{flex:1}
+.ejemplo button{min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid var(--gold);background:transparent;color:var(--gold-hi);font-weight:800;font-size:13.5px;cursor:pointer}
+.ejemplo button:hover{background:var(--gold);color:#0A0A0A}
+
+.titulo{margin-top:24px;display:flex;align-items:flex-end;gap:12px 24px;flex-wrap:wrap}
+.titulo h1{font-family:var(--serif);font-weight:700;font-size:clamp(2.1rem,4.4vw,3rem);line-height:1;letter-spacing:-.005em}
+.titulo p{color:var(--mute);font-size:15px;max-width:34em}
+
+.resumen{margin-top:20px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.dato{background:var(--ink-2);border:1px solid var(--line-soft);border-radius:16px;padding:15px 18px 14px}
+.dato dt{font-size:13px;font-weight:600;color:var(--mute)}
+.dato dd{margin-top:2px;font-family:var(--serif);font-weight:700;font-size:2.3rem;line-height:1.05;font-variant-numeric:lining-nums;color:var(--paper)}
+.dato.oro{border-color:var(--line)}
+.dato.oro dd{color:var(--gold-hi)}
+
+.filtro{display:none;margin-top:18px;border:1.5px solid var(--gold);border-radius:999px;overflow:hidden;background:var(--ink)}
+.filtro button{flex:1;border:0;background:transparent;min-height:44px;padding:0 6px;font-weight:700;font-size:13.5px;color:var(--gold-hi);cursor:pointer;line-height:1.1}
+.filtro button+button{border-left:1.5px solid var(--gold)}
+.filtro button[aria-pressed="true"]{background:var(--gold);color:#0A0A0A}
+
+.tablero{margin-top:22px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.tablero.cuatro{grid-template-columns:repeat(4,minmax(0,1fr))}
+.col{background:var(--ink-2);border:1px solid var(--line-soft);border-radius:18px;padding:14px 12px 14px}
+.col-hd{display:flex;align-items:center;gap:10px;padding:2px 6px 12px}
+.col-hd h2{font-family:var(--serif);font-weight:700;font-size:1.55rem;line-height:1}
+.col-hd .n{margin-left:auto;font-size:13px;font-weight:800;color:var(--mute);background:var(--ink-3);border-radius:999px;padding:3px 11px}
+.col-hd .barra{width:5px;height:24px;border-radius:3px;background:var(--c)}
+.col.caliente{--c:var(--caliente)} .col.tibio{--c:var(--tibio)} .col.frio{--c:var(--frio)} .col.sin{--c:var(--sin)}
+.col .lista{display:grid;gap:10px}
+.vacio{padding:18px 10px;font-size:14px;color:var(--mute-2);text-align:center}
+
+.lead{background:var(--ink-3);border:1px solid var(--line-soft);border-left:4px solid var(--c);border-radius:14px;padding:13px 14px 12px}
+.lead-top{display:flex;align-items:flex-start;gap:10px}
+.lead h3{font-family:var(--sans);font-weight:800;font-size:16px;line-height:1.25;flex:1}
+.lead .hora{font-size:12.5px;font-weight:600;color:var(--mute);white-space:nowrap}
+.lead .tel{margin-top:1px;font-size:13px;color:var(--mute-2)}
+.lead .busca{margin-top:8px;font-size:14.5px;font-weight:600;line-height:1.35}
+.lead dl{margin-top:9px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px 12px;font-size:13.5px}
+.lead dt{color:var(--mute)}
+.lead dd{font-weight:700;overflow-wrap:anywhere}
+.lead .pie{margin-top:11px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.chip{font-size:11.5px;font-weight:800;letter-spacing:.04em;padding:3px 10px;border-radius:999px;border:1px solid var(--line);color:var(--gold-hi);white-space:nowrap}
+.chip.estado{border-color:var(--c);color:var(--paper)}
+.lead .abrir{margin-left:auto;min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid var(--gold);background:transparent;color:var(--gold-hi);font-weight:800;font-size:13.5px;cursor:pointer}
+.lead .abrir:hover{background:var(--gold);color:#0A0A0A}
+
+.nota-pie{margin-top:22px;font-size:13px;color:var(--mute-2);max-width:60em}
+
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(16px);opacity:0;z-index:20;pointer-events:none;background:var(--ink-3);border:1px solid var(--line);color:var(--paper);padding:12px 20px;border-radius:999px;font-size:14px;font-weight:600;transition:opacity .25s,transform .25s;max-width:calc(100vw - 32px);text-align:center}
+.toast.on{opacity:1;transform:translateX(-50%)}
+
+footer{border-top:1px solid var(--line-soft);background:#050505}
+.foot{max-width:1240px;margin:0 auto;padding:14px 18px;display:flex;gap:6px 18px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--mute-2)}
+.foot a{color:var(--mute);text-decoration:none;font-weight:700}
+.foot a:hover{color:var(--gold-hi);text-decoration:underline}
+.foot .sp{flex:1}
+
+@media (max-width:1020px){
+  .resumen{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tablero,.tablero.cuatro{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:720px){
+  .aviso .largo{display:none}.aviso .corto{display:inline}
+  .top-in{padding:6px 14px}
+  .top-in .logo{width:38px;height:38px}
+  .top-in .quien{display:none}
+  .lnk.sec{display:none}
+  main{padding:16px 14px 32px}
+  .resumen{gap:10px}
+  .dato{padding:12px 14px}
+  .dato dd{font-size:2rem}
+  .filtro{display:flex}
+  .tablero,.tablero.cuatro{grid-template-columns:minmax(0,1fr);margin-top:14px}
+  .col[hidden-movil="1"]{display:none}
+}
+@media (prefers-reduced-motion:reduce){ *{transition:none !important;animation:none !important} }
+</style>
+</head>
+<body>
+
+<div class="aviso"><b>Demo</b> <span class="largo">&middot; panel de muestra preparado por IJV Agency para Edith Cabrera</span><span class="corto">&middot; panel de muestra</span></div>
+
+<header class="top">
+  <div class="top-in">
+    <img class="logo" src="assets/logo-perfil.png" width="44" height="44" alt="" onerror="this.style.display='none'">
+    <div class="quien"><b>MIS LEADS</b><small>La bandeja ordenada de Edith</small></div>
+    <div class="top-sp"></div>
+    <a class="lnk volver" href="./">&larr; Volver al sitio</a>
+    <a class="lnk sec" href="./whatsapp.html">Simulador de WhatsApp</a>
+  </div>
+</header>
+
+<main>
+  <div class="ejemplo" id="ejemplo" role="status">
+    <b>Datos de ejemplo</b>
+    <span>Se llenan con tus conversaciones reales. Los nombres y teléfonos de abajo son inventados.</span>
+  </div>
+
+  <div class="titulo">
+    <h1>Mis leads</h1>
+    <p>Cada contacto que escribe llega ya filtrado: el asistente lo atiende, lo califica y tú entras solo a los chats que valen la pena.</p>
+  </div>
+
+  <dl class="resumen" id="resumen"></dl>
+
+  <div class="filtro" id="filtro" role="group" aria-label="Filtrar por calificación"></div>
+
+  <div class="tablero" id="tablero"></div>
+
+  <p class="nota-pie">Calificación: Caliente es quien ya dio su inicial, su cuota y una fecha para la visita. Tibio tiene interés pero le faltan datos. Frío no avanzó o busca fuera de las zonas de Edith.</p>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<footer>
+  <div class="foot">
+    <span>Panel preparado por <b>IJV Agency</b> para Edith Cabrera. Sitio de muestra, no es una web oficial.</span>
+    <span class="sp"></span>
+    <a href="https://ijvagency.com/" target="_blank" rel="noopener">Powered by IJV</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ======================================================================
+     CONFIGURACION
+     PANEL_ENDPOINT: URL de un webhook GET que devuelve las filas de la tabla
+     citas_demo_edithcabrera (un arreglo, o {rows|data|items:[...]}). Cada fila puede
+     traer: nombre, busca (o interes/proyecto), inicial, cuota, visita, calificacion
+     (caliente|tibio|frio), created_at (o hora), telefono, canal.
+     Si esta VACIO (valor actual) la pagina usa solo los datos de ejemplo.
+
+     Normas de la instancia compartida (incidente 29-sep): la pagina NO consulta
+     desde file://, NO consulta con la pestana oculta, usa backoff exponencial y
+     deja de consultar tras 6 fallos seguidos (hay boton para reintentar a mano).
+     ====================================================================== */
+  var PANEL_ENDPOINT = '';
+  var POLL_MS = 30000;          /* intervalo base entre consultas */
+  var POLL_MAX_MS = 300000;     /* techo del backoff: 5 min */
+  var MAX_FALLOS = 6;           /* tras 6 fallos seguidos se detiene */
+  var TZ = 'America/Lima';
+
+  /* ---------------- datos de ejemplo (ficticios) ---------------- */
+  var EJEMPLOS = [
+    { nombre:'Carlos Mendoza', tel:'999 000 101', busca:'Casa propia + terreno incluido', inicial:'S/ 3,000', cuota:'S/ 600', visita:'Sábado, 4:00 p. m.', cal:'caliente', hora:'10:42 a. m.', canal:'Anuncio', estado:'Pasado a Edith' },
+    { nombre:'Lucía Paredes', tel:'999 000 102', busca:'Terreno en Sol de Carhuaz', inicial:'S/ 1,500', cuota:'S/ 350', visita:'Domingo, 10:00 a. m.', cal:'caliente', hora:'10:15 a. m.', canal:'Formulario', estado:'Pasado a Edith' },
+    { nombre:'Rosa Quispe', tel:'999 000 103', busca:'Lote, aún elige proyecto', inicial:'S/ 1,500', cuota:'Por definir', visita:'Sin fecha', cal:'tibio', hora:'9:58 a. m.', canal:'Anuncio', estado:'El asistente sigue atendiendo' },
+    { nombre:'Miguel Torres', tel:'999 000 104', busca:'Casa propia + terreno incluido', inicial:'Por definir', cuota:'S/ 500', visita:'Sin fecha', cal:'tibio', hora:'9:31 a. m.', canal:'Formulario', estado:'El asistente sigue atendiendo' },
+    { nombre:'Andrea Flores', tel:'999 000 105', busca:'Busca en Arequipa (fuera de zona)', inicial:'No indicó', cuota:'No indicó', visita:'No aplica', cal:'frio', hora:'9:12 a. m.', canal:'Anuncio', estado:'Sin seguimiento' },
+    { nombre:'Jorge Ramos', tel:'999 000 106', busca:'Solo preguntó el precio', inicial:'No indicó', cuota:'No indicó', visita:'Sin fecha', cal:'frio', hora:'8:47 a. m.', canal:'Anuncio', estado:'Seguimiento programado' }
+  ];
+
+  var COLS = [
+    { k:'caliente', et:'Caliente' },
+    { k:'tibio',    et:'Tibio' },
+    { k:'frio',     et:'Frío' },
+    { k:'sin',      et:'Sin calificar' }
+  ];
+
+  var estado = { filas: EJEMPLOS.slice(), real:false, filtro:'todos', ultima:null };
+
+  /* ---------------- utilidades ---------------- */
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function norm(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
+  function horaLima(v){
+    var d = v ? new Date(v) : new Date();
+    if(isNaN(d)) return String(v||'');
+    try{
+      var s = new Intl.DateTimeFormat('es-PE',{timeZone:TZ,hour:'numeric',minute:'2-digit',hour12:true}).format(d);
+      return s.replace(/[  ]/g,' ').replace(/\s*\b([APap])\.?\s*[Mm]\.?/, function(_,l){ return ' ' + l.toLowerCase() + '. m.'; });
+    }catch(e){ return d.toLocaleTimeString(); }
+  }
+  var toastT;
+  function aviso(txt){
+    var t = $('toast'); t.textContent = txt; t.classList.add('on');
+    clearTimeout(toastT); toastT = setTimeout(function(){ t.classList.remove('on'); }, 3600);
+  }
+
+  /* ---------------- normalizar filas del endpoint ---------------- */
+  function pick(o, ks){ for(var i=0;i<ks.length;i++){ var v = o[ks[i]]; if(v!=null && String(v).trim()!=='') return String(v); } return ''; }
+  function calDe(v){
+    var t = norm(v);
+    if(/calient/.test(t)) return 'caliente';
+    if(/tib/.test(t)) return 'tibio';
+    if(/fri/.test(t)) return 'frio';
+    return 'sin';
+  }
+  function normaliza(r){
+    return {
+      nombre: pick(r,['nombre','name','cliente']) || 'Sin nombre',
+      tel: pick(r,['telefono','tel','phone','whatsapp']),
+      busca: pick(r,['busca','interes','proyecto','tipo','motivo']),
+      inicial: pick(r,['inicial']) || 'No indicó',
+      cuota: pick(r,['cuota','cuota_mensual']) || 'No indicó',
+      visita: pick(r,['visita','visita_preferida','fecha_visita','horario']) || 'Sin fecha',
+      cal: calDe(pick(r,['calificacion','calificación','temperatura','prioridad','cal'])),
+      hora: pick(r,['hora']) || horaLima(pick(r,['created_at','fecha','ts'])),
+      canal: pick(r,['canal','origen','fuente']),
+      estado: pick(r,['estado','status'])
+    };
+  }
+
+  /* ---------------- render ---------------- */
+  function pintaResumen(f){
+    var cal = f.filter(function(x){ return x.cal === 'caliente' || x.cal === 'tibio'; }).length;
+    var pas = f.filter(function(x){ return x.cal === 'caliente'; }).length;
+    var items = [
+      ['Contactos de hoy', f.length, false],
+      ['Calificados', cal, false],
+      ['Pasados a Edith', pas, true],
+      ['Sin avance', f.filter(function(x){ return x.cal === 'frio' || x.cal === 'sin'; }).length, false]
+    ];
+    $('resumen').innerHTML = items.map(function(i){
+      return '<div class="dato' + (i[2] ? ' oro' : '') + '"><dt>' + esc(i[0]) + '</dt><dd>' + i[1] + '</dd></div>';
+    }).join('');
+  }
+
+  function htmlLead(x){
+    var fila = function(et, v){ return v ? '<dt>' + esc(et) + '</dt><dd>' + esc(v) + '</dd>' : ''; };
+    return '<li class="lead">'
+      + '<div class="lead-top"><h3>' + esc(x.nombre) + '</h3><span class="hora">' + esc(x.hora) + '</span></div>'
+      + (x.tel ? '<p class="tel">' + esc(x.tel) + '</p>' : '')
+      + (x.busca ? '<p class="busca">' + esc(x.busca) + '</p>' : '')
+      + '<dl>' + fila('Inicial', x.inicial) + fila('Cuota', x.cuota) + fila('Visita', x.visita) + '</dl>'
+      + '<div class="pie">'
+      + (x.canal ? '<span class="chip">' + esc(x.canal) + '</span>' : '')
+      + (x.estado ? '<span class="chip estado">' + esc(x.estado) + '</span>' : '')
+      + '<button class="abrir" type="button" data-abrir="1">Abrir chat</button>'
+      + '</div></li>';
+  }
+
+  function pintaTablero(){
+    var f = estado.filas;
+    var hayTodos = {}; COLS.forEach(function(c){ hayTodos[c.k] = f.some(function(x){ return x.cal === c.k; }); });
+    var cols = COLS.filter(function(c){ return c.k !== 'sin' || hayTodos.sin; });
+    var tb = $('tablero');
+    tb.className = 'tablero' + (cols.length === 4 ? ' cuatro' : '');
+
+    /* filtro (solo movil) */
+    var flt = $('filtro');
+    var opciones = [{k:'todos', et:'Todos'}].concat(cols.map(function(c){ return {k:c.k, et:c.et}; }));
+    if(!opciones.some(function(o){ return o.k === estado.filtro; })) estado.filtro = 'todos';
+    flt.innerHTML = opciones.map(function(o){
+      var n = o.k === 'todos' ? f.length : f.filter(function(x){ return x.cal === o.k; }).length;
+      return '<button type="button" data-f="' + o.k + '" aria-pressed="' + (estado.filtro === o.k) + '">' + esc(o.et) + ' (' + n + ')</button>';
+    }).join('');
+
+    tb.innerHTML = cols.map(function(c){
+      var xs = f.filter(function(x){ return x.cal === c.k; });
+      var oculta = estado.filtro !== 'todos' && estado.filtro !== c.k;
+      return '<section class="col ' + c.k + '"' + (oculta ? ' hidden-movil="1"' : '') + ' aria-label="' + esc(c.et) + '">'
+        + '<div class="col-hd"><span class="barra"></span><h2>' + esc(c.et) + '</h2><span class="n">' + xs.length + '</span></div>'
+        + (xs.length ? '<ul class="lista">' + xs.map(htmlLead).join('') + '</ul>' : '<p class="vacio">Sin contactos en esta columna.</p>')
+        + '</section>';
+    }).join('');
+    pintaResumen(f);
+  }
+
+  function pintaBanner(extra){
+    var b = $('ejemplo');
+    if(estado.real){
+      b.className = 'ejemplo real';
+      b.innerHTML = '<b>Datos reales</b><span>Conversaciones de tu asistente' + (estado.ultima ? ', actualizado a las ' + esc(estado.ultima) : '') + '.</span>';
+    }else{
+      b.className = 'ejemplo';
+      b.innerHTML = '<b>Datos de ejemplo</b><span>Se llenan con tus conversaciones reales. Los nombres y teléfonos de abajo son inventados.</span>';
+    }
+    if(extra){ b.innerHTML += '<span class="sp"></span>' + extra; }
+  }
+
+  /* ---------------- consulta al endpoint (solo si hay PANEL_ENDPOINT) ---------------- */
+  var fallos = 0, detenido = false, timer = null, pendienteVisible = false;
+
+  function puedeConsultar(){
+    return !!PANEL_ENDPOINT && location.protocol !== 'file:';
+  }
+  function programa(){
+    clearTimeout(timer);
+    if(detenido || !puedeConsultar()) return;
+    /* backoff exponencial: 30 s, 60 s, 120 s... hasta 5 min */
+    var espera = Math.min(POLL_MS * Math.pow(2, fallos), POLL_MAX_MS);
+    timer = setTimeout(tick, espera);
+  }
+  function tick(){
+    if(document.visibilityState !== 'visible'){ pendienteVisible = true; return; }   /* pestana oculta: no consulta */
+    consulta();
+  }
+  function consulta(){
+    if(!puedeConsultar()) return;
+    var ctl = ('AbortController' in window) ? new AbortController() : null;
+    var to = setTimeout(function(){ if(ctl) ctl.abort(); }, 12000);
+    fetch(PANEL_ENDPOINT, { method:'GET', cache:'no-store', signal: ctl ? ctl.signal : undefined })
+      .then(function(r){ clearTimeout(to); if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function(j){
+        var filas = Array.isArray(j) ? j : (j && (j.rows || j.data || j.items)) || null;
+        if(!Array.isArray(filas)) throw new Error('Respuesta inesperada');
+        fallos = 0;
+        if(filas.length){
+          estado.filas = filas.map(normaliza);
+          estado.real = true;
+          estado.ultima = horaLima(new Date());
+          pintaBanner(); pintaTablero();
+        }   /* vacio: se quedan los ejemplos */
+        programa();
+      })
+      .catch(function(){
+        clearTimeout(to);
+        fallos++;
+        if(fallos >= MAX_FALLOS){
+          detenido = true;
+          pintaBanner('<button type="button" id="btn-reintentar">Reintentar conexión</button>');
+          var b = $('btn-reintentar');
+          if(b) b.addEventListener('click', function(){ fallos = 0; detenido = false; pintaBanner(); consulta(); });
+        }else{
+          programa();
+        }
+      });
+  }
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState === 'visible' && pendienteVisible && !detenido){ pendienteVisible = false; consulta(); }
+  });
+
+  /* ---------------- interaccion ---------------- */
+  document.addEventListener('click', function(ev){
+    var t = ev.target;
+    var a = t.closest && t.closest('button[data-abrir]');
+    if(a){ aviso('Vista de muestra: en producción, este botón abre el chat en tu WhatsApp.'); return; }
+    var f = t.closest && t.closest('button[data-f]');
+    if(f){ estado.filtro = f.getAttribute('data-f'); pintaTablero(); }
+  });
+
+  pintaBanner();
+  pintaTablero();
+  if(puedeConsultar()){ if(document.visibilityState === 'visible') consulta(); else pendienteVisible = true; }
+})();
+</script>
+</body>
+</html>
